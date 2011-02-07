@@ -1,0 +1,25 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+# Sample debian/rules that uses debhelper.
+# This file was originally written by Joey Hess and Craig Small.
+# As a special exception, when this file is copied by dh-make into a
+# dh-make output file, you may use that output file without restriction.
+# This special exception was added by Craig Small in version 0.37 of dh-make.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+%:
+	dh  $@
+
+override_dh_auto_configure:
+	./configure --apachever=2.2 --apxs=/usr/bin/apxs2
+
+override_dh_auto_install:
+	mkdir -p `pwd`/debian/`dh_listpackages`/usr/lib/apache2/modules
+	install -m 0644 src/.libs/mod_auth_pubtkt.so `pwd`/debian/`dh_listpackages`/usr/lib/apache2/modules
+	mkdir -p `pwd`/debian/`dh_listpackages`/etc/apache2/mods-available
+	install -m 0644 debian/auth_pubtkt.load `pwd`/debian/`dh_listpackages`/etc/apache2/mods-available
+
+override_dh_auto_clean: override_dh_auto_configure
+	make -j1 realclean

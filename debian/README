@@ -1,0 +1,8 @@
+The Debian Package libapache2-mod-auth-pubtkt
+----------------------------
+
+There is a sample config file in the package documents directory. The best
+documentation seems to be on the upstream home page
+<https://neon1.net/mod_auth_pubtkt/>.
+
+ -- Paul Tötterman <paul.totterman@gmail.com>  Mon, 07 Feb 2011 13:23:43 +0200

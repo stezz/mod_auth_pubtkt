@@ -1,0 +1,5 @@
+libapache2-mod-auth-pubtkt (20100223) unstable; urgency=low
+
+  * Initial packaging.
+
+ -- Paul Tötterman <paul.totterman@iki.fi>  Mon, 07 Feb 2011 13:23:43 +0200

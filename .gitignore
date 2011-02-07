@@ -1,0 +1,10 @@
+debian/files
+debian/libapache2-mod-auth-pubtkt
+Makedefs
+src/.libs
+*.la
+*.lo
+*.log
+*.slo
+*.so
+*.substvars

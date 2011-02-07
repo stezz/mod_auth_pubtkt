@@ -1,0 +1,1 @@
+LoadModule auth_pubtkt_module /usr/lib/apach2/modules/mod_auth_pubtkt.so

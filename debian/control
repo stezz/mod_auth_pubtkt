@@ -1,0 +1,17 @@
+Source: libapache2-mod-auth-pubtkt
+Section: web
+Priority: extra
+Maintainer: Paul Tötterman <paul.totterman@iki.fi>
+Build-Depends: debhelper (>= 7), apache2-threaded-dev
+Standards-Version: 3.8.3
+Homepage: https://neon1.net/mod_auth_pubtkt/
+
+Package: libapache2-mod-auth-pubtkt
+Architecture: any
+Depends: apache2.2-common, ${shlibs:Depends}, ${misc:Depends}
+Description: a pragmatic Web Single Sign-On (SSO) solution
+ mod_auth_pubtkt is an Apache module that authenticates a user based on a
+ cookie with a ticket that has been issued by a central login server and
+ digitally signed using either RSA or DSA. This means that only the
+ trusted login server has the private key required to generate tickets,
+ while web servers only need the corresponding public key to verify them.
