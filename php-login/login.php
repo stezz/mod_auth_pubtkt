@@ -8,6 +8,10 @@
 
 require_once("pubtkt.inc");
 
+header("Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
+header("Pragma: no-cache");
+header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+
 /*	Set the parameters relevant to your domain below.
 	WARNING: do not use the example keys provided with the distribution
 	in production - otherwise, anyone could fake your tickets! Generate
@@ -88,12 +92,12 @@ function log_login($ip, $username, $success) {
 }
 
 /* use the last username, if known (saves the user from having to type that all the time) */
-$username = $_COOKIE['sso_lastuser'];
+$username = isset($_COOKIE['sso_lastuser']) ? $_COOKIE['sso_lastuser'] : NULL;
 $password = "";
 $err = "";
 $loginsuccess = false;
 
-if ($_GET['back']) {
+if (isset($_GET['back'])) {
 	/* Extract the host name of the 'back' URL so we can tell the user when
 	   there will be no point in trying to log in, as the cookie won't be
 	   available to the target server (e.g. if users try to access a server
@@ -124,8 +128,8 @@ if ($_POST) {
 		setcookie("auth_pubtkt", $tkt, 0, "/", $domain, $secure_cookie);
 		
 		setcookie("sso_lastuser", $username, time()+30*24*60*60);
-		
-		if ($_GET['back']) {
+
+		if (isset($_GET['back'])) {
 			header("Location: " . $_GET['back']);
 			exit;
 		}
@@ -134,7 +138,7 @@ if ($_POST) {
 		$loginerr = "Authentication failed. Please try again.";
 	}
 } else {
-	if ($_COOKIE['auth_pubtkt']) {
+	if (isset($_COOKIE['auth_pubtkt'])) {
 		/* Extract data from existing cookie so we can nicely offer the user
 		   a logout function. No attempt at verifying the ticket is made,
 		   as that's not necessary at this point. */
@@ -145,8 +149,8 @@ if ($_POST) {
 
 		/* Checking validity of the ticket and if we are between begin of grace 
 		   period and end of ticket validity. If so we can refresh ticket */
-		if (pubtkt_verify($pubkeyfile, $keytype, $ticket) && isset($tkt_graceperiod)
-		    && is_numeric($tkt_graceperiod) && ($tkt_graceperiod <= time()) 
+		if (pubtkt_verify($pubkeyfile, $keytype, $_COOKIE['auth_pubtkt']) && isset($tkt_graceperiod)
+		    && is_numeric($tkt_graceperiod) && ($tkt_graceperiod <= time())
 		    && (time() <= $tkt_validuntil)) {
 
 			/* getting user information */
@@ -162,8 +166,8 @@ if ($_POST) {
 				setcookie("auth_pubtkt", $tkt, 0, "/", $domain, $secure_cookie);
 		
 				setcookie("sso_lastuser", $tkt_uid, time()+30*24*60*60);
-		
-				if ($_GET['back']) {
+
+				if (isset($_GET['back'])) {
 					header("Location: " . $_GET['back']);
 					exit;
 				}
@@ -266,13 +270,13 @@ function readCookie(cookiename) {
 
 <?php else: ?>
 
-<?php if ($_GET['timeout']): ?>
+<?php if (isset($_GET['timeout'])): ?>
 <p>Your session has ended due to a timeout; please log in again.</p>
-<?php elseif ($_GET['unauth']): ?>
+<?php elseif (isset($_GET['unauth'])): ?>
 <p>You don&apos;t have permission to access the desired resource on
 <?php echo htmlspecialchars($reshost); ?>;<br>you may try logging in again
 with different credentials.</p>
-<?php elseif ($tkt_uid && $tkt_validuntil >= time() && $ticket['cip'] == $_SERVER['REMOTE_ADDR']): ?>
+<?php elseif (isset($tkt_uid) && $tkt_validuntil >= time() && $ticket['cip'] == $_SERVER['REMOTE_ADDR']): ?>
 <p>You are currently logged on as &apos;<?php echo htmlspecialchars($tkt_uid); ?>&apos;.
 <form action="logout.php" method="POST">
 <input type="submit" name="logout" value="Logout">
@@ -280,7 +284,7 @@ with different credentials.</p>
 </p>
 <?php endif; ?>
 
-<?php if ($loginerr): ?>
+<?php if (isset($loginerr)): ?>
 <p class="errmsg"><?php echo nl2br(htmlspecialchars($loginerr)); ?></p>
 <?php endif; ?>
 
