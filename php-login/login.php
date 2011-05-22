@@ -4,26 +4,92 @@
 
    written by Manuel Kasper <mk@neon1.net> */
 
-require_once("pubtkt.inc");
+require_once('pubtkt.inc');
 
-header("Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
-header("Pragma: no-cache");
-header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+header('Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
+header('Pragma: no-cache');
+header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
 
 /* Set the parameters relevant to your domain below.
    WARNING: do not use the example keys provided with the distribution
    in production - otherwise, anyone could fake your tickets! Generate
    your own key! */
-$domain = ".example.com";
+$domain = '.example.com';
 $secure_cookie = false; /* set to true if all your web servers use HTTPS */
 
-$logfile = "private/login.log";
-$privkeyfile = "private/tkt_privkey_dsa.pem";
-$pubkeyfile = "private/tkt_pubkey_dsa.pem";
-$keytype = "DSA";
-$localuserdb = "private/users.txt";
+$logfile = 'private/login.log';
+$privkeyfile = 'private/tkt_privkey_dsa.pem';
+$pubkeyfile = 'private/tkt_pubkey_dsa.pem';
+$keytype = 'DSA';
+$localuserdb = 'private/users.txt';
+$ldap_uri = 'localhost';
+$ldap_base = 'dc=example,dc=com';
+$ldap_user_filter = '(uid=%s)';
+$ldap_group_filter = '(&(objectClass=groupOfNames)(member=%s))';
+$ldap_group_name_attrib = 'cn';
 $default_timeout = 86400;
 $default_graceperiod = 3600;
+
+function ldap_login($username, $password) {
+    $ds = ldap_connect($ldap_uri);
+    ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
+
+    $res = ldap_search($ds, $ldap_base, sprintf($ldap_user_filter, $username), array('dn'));
+
+    if (!$res) {
+        return false;
+    }
+
+    $entries = ldap_get_entries($ds, $res);
+    $dn = $entries[0]['dn'];
+
+    $bind = ldap_bind($ds, $dn, $password);
+
+    return !!$bind;
+}
+
+function ldap_tokens($username) {
+    $tokens = array();
+
+    $ds = ldap_connect($ldap_uri);
+    ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
+
+    $res = ldap_search($ds, $base, sprintf($ldap_user_filter, $username), array('dn'));
+
+    if (!$res) {
+        return false;
+    }
+
+    $entries = ldap_get_entries($ds, $res);
+    $dn = $entries[0]['dn'];
+
+    $res = ldap_search($ds, $base, sprintf($ldap_group_filter, $dn), array($ldap_group_name_attrib));
+    $entries = ldap_get_entries($ds, $res);
+
+    for ($i = 0; $i < $entries['count']; $i += 1) {
+        $cn = $entries[$i]['cn'];
+        for ($j = 0; $j < $cn['count']; $j += 1) {
+            $tokens[] = $cn[$j];
+        }
+    }
+
+    return $tokens;
+}
+
+function ldap_exists($username) {
+    $ds = ldap_connect($ldap_uri);
+    ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
+
+    $res = ldap_search($ds, $ldap_base, sprintf($ldap_user_filter, $username), array('dn'));
+
+    if (!$res) {
+        return false;
+    }
+
+    $entries = ldap_get_entries($ds, $search);
+
+    return !!$entries['count'];
+}
 
 /* authenticates the user with the given password against the local
    user database; returns an array with the following information:
