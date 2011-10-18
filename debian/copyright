@@ -37,7 +37,7 @@ can be found in `/usr/share/common-licenses/Apache-2.0'.
 
 The Debian packaging is:
 
-    Copyright (C) 2011 Paul Tötterman <paul.totterman@iki.fi>
+    Copyright (C) 2011 ZenRobotics Ltd.
 
 # Please chose a license for your packaging work. If the program you package
 # uses a mainstream license, using the same license is the safest choice.
