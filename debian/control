@@ -2,8 +2,8 @@ Source: libapache2-mod-auth-pubtkt
 Section: web
 Priority: extra
 Maintainer: Paul Tötterman <paul.totterman@iki.fi>
-Build-Depends: debhelper (>= 7.0.50), apache2-threaded-dev
-Standards-Version: 3.9.1
+Build-Depends: debhelper (>= 7.0.50~), apache2-prefork-dev || apache2-threaded-dev
+Standards-Version: 3.8.4
 Homepage: https://neon1.net/mod_auth_pubtkt/
 
 Package: libapache2-mod-auth-pubtkt
