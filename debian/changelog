@@ -1,4 +1,4 @@
-libapache2-mod-auth-pubtkt (0.6-0) unstable; urgency=low
+libapache2-mod-auth-pubtkt (0.6) unstable; urgency=low
 
   * Syncing package version with upstream version for clarity
 
